@@ -9,3 +9,8 @@ help: ## help
 copy-xml: ## copy KindleSyncMetadataCache.xml to data dir
 	mkdir -p data
 	cp ~/Library/Application\ Support/Kindle/Cache/KindleSyncMetadataCache.xml ./data
+
+.PHONY: fmt
+fmt: ## format code
+	isort .
+	black .
