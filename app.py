@@ -1,4 +1,5 @@
 import csv
+import os
 import sys
 from dataclasses import dataclass
 from typing import Dict, List, TextIO
@@ -56,7 +57,6 @@ def export_csv(books: List[Book], output: TextIO) -> None:
     help="converted file path [default:STDOUT]",
 )
 def main(i: TextIO, o: TextIO) -> None:
-
     xml_file = i
     output = o
 
@@ -91,8 +91,15 @@ def main(i: TextIO, o: TextIO) -> None:
             )
         )
 
-    # TODO 別フォーマットも追加したい
-    export_csv(books, output)
+    # TODO 別フォーマットを追加する
+    match os.path.splitext(output.name):
+        case [_, ".csv"]:
+            export_csv(books, output)
+        case ["<stdout>", ""]:
+            # オプション指定なしのとき
+            export_csv(books, output)
+        case _:
+            raise ValueError(f"Invalid output format: {output.name}")
 
 
 if __name__ == "__main__":
