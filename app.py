@@ -141,6 +141,12 @@ def main(input_: TextIO, output: TextIO) -> None:
         case _:
             raise ValueError(f"Invalid output format: {output.name}")
 
+    if input_:
+        input_.close()
+
+    if output:
+        output.close()
+
 
 if __name__ == "__main__":
     main()
