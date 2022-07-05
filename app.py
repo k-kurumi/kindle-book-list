@@ -76,19 +76,20 @@ def datetime_to_date(dt: str) -> str:
 
 @click.command()
 @click.option(
-    "-i", type=click.File("r"), help="KindleSyncMetadataCache.xml path", required=True
+    "-i",
+    "--input",
+    "input_",
+    type=click.File("r"), help="KindleSyncMetadataCache.xml path", required=True
 )
 @click.option(
     "-o",
+    "--output",
     type=click.File("w"),
     default=sys.stdout,
     help="converted file path [default:STDOUT]",
 )
-def main(i: TextIO, o: TextIO) -> None:
-    xml_file = i
-    output = o
-
-    tree = ElementTree.parse(xml_file)
+def main(input_: TextIO, output: TextIO) -> None:
+    tree = ElementTree.parse(input_)
     root = tree.getroot()
 
     books = []
