@@ -3,7 +3,7 @@ import os
 import sys
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, TextIO
+from typing import TextIO
 from xml.etree import ElementTree
 
 import click
@@ -15,13 +15,13 @@ class Book:
     asin: str
     title: str
     title_yomi: str
-    authors: List[str]
-    publishers: List[str]
+    authors: list[str]
+    publishers: list[str]
     publication_date: str
     purchase_date: str
 
     @property
-    def row_dict(self) -> Dict:
+    def row_dict(self) -> dict:
         return {
             "asin": self.asin,
             "title": self.title,
@@ -33,7 +33,7 @@ class Book:
         }
 
     @staticmethod
-    def csv_fieldnames() -> List[str]:
+    def csv_fieldnames() -> list[str]:
         """csvのヘッダ部分"""
         return [
             "asin",
@@ -46,7 +46,7 @@ class Book:
         ]
 
 
-def export_csv(books: List[Book], output: TextIO) -> None:
+def export_csv(books: list[Book], output: TextIO) -> None:
     """CSV出力
     生成ファイルがUTF-8なので、直接Excelで開くと文字化けする
     """
@@ -79,7 +79,9 @@ def datetime_to_date(dt: str) -> str:
     "-i",
     "--input",
     "input_",
-    type=click.File("r"), help="KindleSyncMetadataCache.xml path", required=True
+    type=click.File("r"),
+    help="KindleSyncMetadataCache.xml path",
+    required=True,
 )
 @click.option(
     "-o",
