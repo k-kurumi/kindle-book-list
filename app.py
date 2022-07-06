@@ -72,7 +72,7 @@ def export_csv(books: list[Book], output: TextIO) -> None:
     writer.writeheader()
 
     for b in books:
-        writer.writerow(b.to_dict)
+        writer.writerow(b.csv_row)
 
 
 def export_json(books: list[Book], output: TextIO) -> None:
