@@ -1,5 +1,5 @@
 import csv
-import os
+import json
 import sys
 from dataclasses import dataclass
 from datetime import datetime
@@ -21,7 +21,7 @@ class Book:
     purchase_date: str
 
     @property
-    def row_dict(self) -> dict:
+    def csv_row(self) -> dict:
         return {
             "asin": self.asin,
             "title": self.title,
@@ -45,6 +45,22 @@ class Book:
             "purchase_date",
         ]
 
+    @staticmethod
+    def json_body(b) -> dict:
+        """jsonシリアライズ用"""
+        if isinstance(b, Book):
+            return {
+                "asin": b.asin,
+                "title": b.title,
+                "authors": b.authors,
+                "publishers": b.publishers,
+                "publication_date": b.publication_date,
+                "purchase_date": b.purchase_date,
+            }
+        else:
+            type_name = b.__class__.__name__
+            raise TypeError(f"Unexpected type {type_name}")
+
 
 def export_csv(books: list[Book], output: TextIO) -> None:
     """CSV出力
@@ -56,7 +72,12 @@ def export_csv(books: list[Book], output: TextIO) -> None:
     writer.writeheader()
 
     for b in books:
-        writer.writerow(b.row_dict)
+        writer.writerow(b.to_dict)
+
+
+def export_json(books: list[Book], output: TextIO) -> None:
+    """JSON出力"""
+    json.dump(books, output, ensure_ascii=False, indent=4, default=Book.json_body)
 
 
 def datetime_to_date(dt: str) -> str:
@@ -88,9 +109,18 @@ def datetime_to_date(dt: str) -> str:
     "--output",
     type=click.File("w"),
     default=sys.stdout,
-    help="converted file path [default:STDOUT]",
+    help="converted file path [default: STDOUT]",
 )
-def main(input_: TextIO, output: TextIO) -> None:
+@click.option(
+    "-f",
+    "--format",
+    "format_",
+    type=click.Choice(["csv", "json"]),
+    default="csv",
+    show_default=True,
+    help="output format",
+)
+def main(input_: TextIO, output: TextIO, format_: str) -> None:
     tree = ElementTree.parse(input_)
     root = tree.getroot()
 
@@ -105,9 +135,7 @@ def main(input_: TextIO, output: TextIO) -> None:
 
         # よみはひらがなの方が分かりやすい
         # よみが空文字の書籍がある
-        title_yomi = jaconv.kata2hira(
-            book.find("title").attrib.get("pronunciation", "")
-        )
+        title_yomi = jaconv.kata2hira(book.find("title").attrib.get("pronunciation", ""))
 
         # authors,publishersは空だったり複数登録されている場合がある
         authors = [a.text for a in book.find("authors")]
@@ -132,14 +160,13 @@ def main(input_: TextIO, output: TextIO) -> None:
         )
 
     # TODO 別フォーマットを追加する
-    match os.path.splitext(output.name):
-        case [_, ".csv"]:
+    match format_:
+        case "csv":
             export_csv(books, output)
-        case ["<stdout>", ""]:
-            # オプション指定なしのとき
-            export_csv(books, output)
+        case "json":
+            export_json(books, output)
         case _:
-            raise ValueError(f"Invalid output format: {output.name}")
+            export_csv(books, output)
 
     if input_:
         input_.close()
