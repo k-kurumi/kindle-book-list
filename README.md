@@ -13,8 +13,18 @@
 3. 実行する
 
    ```shell
-   docker run --rm -v $PWD:/app kurumi/kindle-book-list:latest -i <カレントのKindleSyncMetadataCache.xmlへのパス> -o <出力ファイルパス>
+   ##
+   ## Options:
+   ##   -i, --input FILENAME     KindleSyncMetadataCache.xml path  [required]
+   ##   -o, --output FILENAME    converted file path [default: STDOUT]
+   ##   -f, --format [csv|json]  output format  [default: csv]
+   ##   --help                   Show this message and exit.
+   ##
 
-   ## ex:
+   docker run --rm -v $PWD:/app kurumi/kindle-book-list:latest -i <カレントのKindleSyncMetadataCache.xmlへのパス> -f json
+
+   ##
+   ## ex: csv を data/output.csv に出力
    ## docker run --rm -v $PWD:/app kurumi/kindle-book-list:latest -i data/KindleSyncMetadataCache.xml -o data/output.csv
+   ##
    ```
