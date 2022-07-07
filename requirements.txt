@@ -1,6 +1,7 @@
 jaconv==0.3
 click==8.1.3
 
-ipython
-black
-isort
+ipython==8.4.0
+black==22.6.0
+isort==5.10.1
+pyright==1.1.257
