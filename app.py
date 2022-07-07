@@ -1,7 +1,7 @@
 import csv
 import json
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TextIO
 from xml.etree import ElementTree
@@ -12,13 +12,13 @@ import jaconv
 
 @dataclass(frozen=True)
 class Book:
-    asin: str
-    title: str
-    title_yomi: str
-    authors: list[str]
-    publishers: list[str]
-    publication_date: str
-    purchase_date: str
+    asin: str = ""
+    title: str = ""
+    title_yomi: str = ""
+    authors: list[str] = field(default_factory=list)
+    publishers: list[str] = field(default_factory=list)
+    publication_date: str = ""
+    purchase_date: str = ""
 
     @property
     def csv_row(self) -> dict:
@@ -126,8 +126,8 @@ def main(input_: TextIO, output: TextIO, format_: str) -> None:
 
     books = []
     for book in root.iter("meta_data"):
-        asin = book.find("ASIN").text
-        title = book.find("title").text
+        asin: str = book.find("ASIN").text
+        title: str = book.find("title").text
 
         # ASINだけのエントリーがいくつかあるので無視する
         if "---" in title:
@@ -135,11 +135,11 @@ def main(input_: TextIO, output: TextIO, format_: str) -> None:
 
         # よみはひらがなの方が分かりやすい
         # よみが空文字の書籍がある
-        title_yomi = jaconv.kata2hira(book.find("title").attrib.get("pronunciation", ""))
+        title_yomi: str = jaconv.kata2hira(book.find("title").attrib.get("pronunciation", ""))
 
         # authors,publishersは空だったり複数登録されている場合がある
-        authors = [a.text for a in book.find("authors")]
-        publishers = [p.text for p in book.find("publishers")]
+        authors: list[str] = [a.text for a in book.find("authors")]
+        publishers: list[str] = [p.text for p in book.find("publishers")]
 
         # 出版日(出版日が空文字の書籍がある)
         publication_date = datetime_to_date(book.find("publication_date").text)
