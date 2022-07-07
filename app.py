@@ -52,6 +52,7 @@ class Book:
             return {
                 "asin": b.asin,
                 "title": b.title,
+                "title_yomi": b.title_yomi,
                 "authors": b.authors,
                 "publishers": b.publishers,
                 "publication_date": b.publication_date,
@@ -77,7 +78,7 @@ def export_csv(books: list[Book], output: TextIO) -> None:
 
 def export_json(books: list[Book], output: TextIO) -> None:
     """JSON出力"""
-    json.dump(books, output, ensure_ascii=False, indent=4, default=Book.json_body)
+    json.dump({"count": len(books), "books": books}, output, ensure_ascii=False, indent=4, default=Book.json_body)
 
 
 def datetime_to_date(dt: str) -> str:
