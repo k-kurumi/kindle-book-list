@@ -1,7 +1,7 @@
 import csv
 import json
 import sys
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import TextIO
 from xml.etree import ElementTree
@@ -49,15 +49,7 @@ class Book:
     def json_body(b) -> dict:
         """jsonシリアライズ用"""
         if isinstance(b, Book):
-            return {
-                "asin": b.asin,
-                "title": b.title,
-                "title_yomi": b.title_yomi,
-                "authors": b.authors,
-                "publishers": b.publishers,
-                "publication_date": b.publication_date,
-                "purchase_date": b.purchase_date,
-            }
+            return asdict(b)
         else:
             type_name = b.__class__.__name__
             raise TypeError(f"Unexpected type {type_name}")
