@@ -1,10 +1,10 @@
 import csv
 import json
 import sys
+import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import TextIO
-from xml.etree import ElementTree
 
 import click
 import jaconv
@@ -114,13 +114,13 @@ def datetime_to_date(dt: str) -> str:
     help="output format",
 )
 def main(input_: TextIO, output: TextIO, format_: str) -> None:
-    tree = ElementTree.parse(input_)
+    tree = ET.parse(input_)
     root = tree.getroot()
 
     books = []
     for book in root.iter("meta_data"):
-        asin: str = book.find("ASIN").text
-        title: str = book.find("title").text
+        asin: str = book.find("ASIN").text  # type: ignore
+        title: str = book.find("title").text  # type: ignore
 
         # ASINだけのエントリーがいくつかあるので無視する
         if "---" in title:
@@ -128,17 +128,17 @@ def main(input_: TextIO, output: TextIO, format_: str) -> None:
 
         # よみはひらがなの方が分かりやすい
         # よみが空文字の書籍がある
-        title_yomi: str = jaconv.kata2hira(book.find("title").attrib.get("pronunciation", ""))
+        title_yomi: str = jaconv.kata2hira(book.find("title").attrib.get("pronunciation", ""))  # type: ignore
 
         # authors,publishersは空だったり複数登録されている場合がある
-        authors: list[str] = [a.text for a in book.find("authors")]
-        publishers: list[str] = [p.text for p in book.find("publishers")]
+        authors: list[str] = [a.text for a in book.find("authors")]  # type: ignore
+        publishers: list[str] = [p.text for p in book.find("publishers")]  # type: ignore
 
         # 出版日(出版日が空文字の書籍がある)
-        publication_date = datetime_to_date(book.find("publication_date").text)
+        publication_date = datetime_to_date(book.find("publication_date").text)  # type: ignore
 
         # 購入日
-        purchase_date = datetime_to_date(book.find("purchase_date").text)
+        purchase_date = datetime_to_date(book.find("purchase_date").text)  # type: ignore
 
         books.append(
             Book(
