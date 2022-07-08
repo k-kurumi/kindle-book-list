@@ -4,7 +4,7 @@ import sys
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import TextIO
+from typing import Optional
 
 import click
 import jaconv
@@ -55,22 +55,40 @@ class Book:
             raise TypeError(f"Unexpected type {type_name}")
 
 
-def export_csv(books: list[Book], output: TextIO) -> None:
+def export_csv(books: list[Book], file_path: Optional[str]) -> None:
     """CSV出力
     生成ファイルがUTF-8なので、直接Excelで開くと文字化けする
     """
 
-    writer = csv.DictWriter(output, fieldnames=Book.csv_fieldnames(), dialect="excel")
+    match file_path:
+        case None:
+            # -oオプション指定なしのとき
+            writer = csv.DictWriter(sys.stdout, fieldnames=Book.csv_fieldnames(), dialect="excel")
+            writer.writeheader()
+            for b in books:
+                writer.writerow(b.csv_row)
+        case _:
+            with open(file_path, "w") as fp:
+                writer = csv.DictWriter(fp, fieldnames=Book.csv_fieldnames(), dialect="excel")
+                writer.writeheader()
+                for b in books:
+                    writer.writerow(b.csv_row)
 
-    writer.writeheader()
 
-    for b in books:
-        writer.writerow(b.csv_row)
-
-
-def export_json(books: list[Book], output: TextIO) -> None:
+def export_json(books: list[Book], file_path: Optional[str]) -> None:
     """JSON出力"""
-    json.dump({"count": len(books), "books": books}, output, ensure_ascii=False, indent=4, default=Book.json_body)
+
+    match file_path:
+        case None:
+            # -oオプション指定なしのとき
+            json.dump(
+                {"count": len(books), "books": books}, sys.stdout, ensure_ascii=False, indent=4, default=Book.json_body
+            )
+        case _:
+            with open(file_path, "w") as fp:
+                json.dump(
+                    {"count": len(books), "books": books}, fp, ensure_ascii=False, indent=4, default=Book.json_body
+                )
 
 
 def datetime_to_date(dt: str) -> str:
@@ -92,17 +110,18 @@ def datetime_to_date(dt: str) -> str:
 @click.option(
     "-i",
     "--input",
-    "input_",
-    type=click.File("r"),
+    "input_path",
+    type=click.Path(exists=True, readable=True),
     help="KindleSyncMetadataCache.xml path",
     required=True,
 )
 @click.option(
     "-o",
     "--output",
-    type=click.File("w"),
-    default=sys.stdout,
-    help="converted file path [default: STDOUT]",
+    "output_path",
+    type=click.Path(),
+    default=None,
+    help="converted file path",
 )
 @click.option(
     "-f",
@@ -113,8 +132,8 @@ def datetime_to_date(dt: str) -> str:
     show_default=True,
     help="output format",
 )
-def main(input_: TextIO, output: TextIO, format_: str) -> None:
-    tree = ET.parse(input_)
+def main(input_path: str, output_path: Optional[str], format_: str) -> None:
+    tree = ET.parse(input_path)
     root = tree.getroot()
 
     books = []
@@ -155,17 +174,11 @@ def main(input_: TextIO, output: TextIO, format_: str) -> None:
     # TODO 別フォーマットを追加する
     match format_:
         case "csv":
-            export_csv(books, output)
+            export_csv(books, output_path)
         case "json":
-            export_json(books, output)
+            export_json(books, output_path)
         case _:
-            export_csv(books, output)
-
-    if input_:
-        input_.close()
-
-    if output:
-        output.close()
+            export_csv(books, output_path)
 
 
 if __name__ == "__main__":
