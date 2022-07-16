@@ -4,14 +4,16 @@ import sys
 import xml.etree.ElementTree as ET
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Optional
 
 import click
-import jaconv
+import jaconv  # type: ignore
 
 
 @dataclass(frozen=True)
 class Book:
+    # https://amazon.jp/dp/<asin> が商品ページ
+    # 単行本が文庫本化されたため、単行本ページごと消されて
+    # asinやtitle情報があってもページがない商品あり。
     asin: str = ""
     title: str = ""
     title_yomi: str = ""
@@ -55,7 +57,7 @@ class Book:
             raise TypeError(f"Unexpected type {type_name}")
 
 
-def export_csv(books: list[Book], file_path: Optional[str]) -> None:
+def export_csv(books: list[Book], file_path: str | None) -> None:
     """CSV出力
     生成ファイルがUTF-8なので、直接Excelで開くと文字化けする
     """
@@ -75,7 +77,7 @@ def export_csv(books: list[Book], file_path: Optional[str]) -> None:
                     writer.writerow(b.csv_row)
 
 
-def export_json(books: list[Book], file_path: Optional[str]) -> None:
+def export_json(books: list[Book], file_path: str | None) -> None:
     """JSON出力"""
 
     match file_path:
@@ -132,7 +134,7 @@ def datetime_to_date(dt: str) -> str:
     show_default=True,
     help="output format",
 )
-def main(input_path: str, output_path: Optional[str], format_: str) -> None:
+def main(input_path: str, output_path: str | None, format_: str) -> None:
     tree = ET.parse(input_path)
     root = tree.getroot()
 
