@@ -1,0 +1,40 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+  KINDLE_XML_PATH: ~/Library/Application\ Support/Kindle/Cache/KindleSyncMetadataCache.xml
+
+tasks:
+  default:
+    cmds:
+      - task -l
+    silent: true
+
+  copy-xml:
+    cmds:
+      - mkdir -p data
+      - xmllint --encode utf-8 --format {{.KINDLE_XML_PATH}} > ./data/KindleSyncMetadataCache.xml
+    desc: copy kindle xml to current data dir
+
+  fmt:
+    cmds:
+      - isort .
+      - black .
+    desc: code fmt
+
+  docker-build:
+    cmds:
+      - docker build -t kurumi/kindle-book-list:latest .
+    desc: docker build
+
+  docker-push:
+    cmds:
+      - docker push kurumi/kindle-book-list:latest
+    desc: docker push
+
+  docker-run:
+    cmds:
+      - docker run --rm -v $PWD:/app kurumi/kindle-book-list:latest -i data/KindleSyncMetadataCache.xml
+    desc: docker run
