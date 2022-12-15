@@ -1,0 +1,4 @@
+black==22.12.0
+ipython==8.7.0
+isort==5.11.2
+pyright==1.1.284
