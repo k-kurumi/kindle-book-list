@@ -26,6 +26,7 @@ tasks:
 
   docker-build:
     cmds:
+      - rm -rf kindle/__pycache__
       - docker build -t kurumi/kindle-book-list:latest .
     desc: docker build
 
@@ -36,5 +37,5 @@ tasks:
 
   docker-run:
     cmds:
-      - docker run --rm -v $PWD:/app kurumi/kindle-book-list:latest -i data/KindleSyncMetadataCache.xml
+      - cat ./data/KindleSyncMetadataCache.xml | docker run --rm -i kurumi/kindle-book-list:latest
     desc: docker run

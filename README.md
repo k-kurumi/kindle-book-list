@@ -8,23 +8,16 @@
 
 2. `KindleSyncMetadataCache.xml` をカレントにコピーする
 
-   > `~/Library/Application Support/Kindle/Cache/KindleSyncMetadataCache.xml` (Kindle for mac の場合)
+   > `~/Library/Application Support/Kindle/Cache/KindleSyncMetadataCache.xml`
 
 3. 実行する
 
    ```shell
-   ##
-   ## Options:
-   ##   -i, --input FILENAME     KindleSyncMetadataCache.xml path  [required]
-   ##   -o, --output FILENAME    converted file path [default: STDOUT]
-   ##   -f, --format [csv|json]  output format  [default: csv]
-   ##   --help                   Show this message and exit.
-   ##
+   ╭─ Options ────────────────────────────────────────────────╮
+   │ --in-file         TEXT  [default: <stdin>]               │
+   │ --out-file        TEXT  [default: <stdout>]              │
+   │ --help                  Show this message and exit.      │
+   ╰──────────────────────────────────────────────────────────╯
 
-   docker run --rm -v $PWD:/app kurumi/kindle-book-list:latest -i <カレントのKindleSyncMetadataCache.xmlへのパス> -f json
-
-   ##
-   ## ex: csv を data/output.csv に出力
-   ## docker run --rm -v $PWD:/app kurumi/kindle-book-list:latest -i data/KindleSyncMetadataCache.xml -o data/output.csv
-   ##
+   cat ./data/KindleSyncMetadataCache.xml | docker run --rm -i kurumi/kindle-book-list:latest
    ```
