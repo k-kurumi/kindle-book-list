@@ -24,6 +24,11 @@ tasks:
       - black .
     desc: code fmt
 
+  test:
+    cmds:
+      - pytest -v
+    desc: code test
+
   docker-build:
     cmds:
       - rm -rf kindle/__pycache__
