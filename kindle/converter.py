@@ -59,6 +59,9 @@ def file_to_dataframe(file_path: str) -> DataFrame:
         # 購入日
         purchase_date = datetime_to_date(book.find("purchase_date").text)  # type: ignore
 
+        # 商品ページ
+        url = f"https://amazon.jp/dp/{asin}"
+
         books.append(
             Book(
                 asin=asin,
@@ -68,6 +71,7 @@ def file_to_dataframe(file_path: str) -> DataFrame:
                 publishers=publishers,
                 publication_date=publication_date,
                 purchase_date=purchase_date,
+                url=url,
             )
         )
 

@@ -13,3 +13,4 @@ class Book:
     publishers: list[str] = field(default_factory=list)
     publication_date: str = ""
     purchase_date: str = ""
+    url: str = ""
