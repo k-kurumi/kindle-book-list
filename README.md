@@ -12,12 +12,24 @@
 
 3. 実行する
 
-   ```shell
-   ╭─ Options ────────────────────────────────────────────────╮
-   │ --in-file         TEXT  [default: <stdin>]               │
-   │ --out-file        TEXT  [default: <stdout>]              │
-   │ --help                  Show this message and exit.      │
-   ╰──────────────────────────────────────────────────────────╯
+   オプション一覧
 
-   cat ./data/KindleSyncMetadataCache.xml | docker run --rm -i kurumi/kindle-book-list:latest
+   | option       | default        | description                                   |
+   | ------------ | -------------- | --------------------------------------------- |
+   | `--in-file`  | `stdin`        | `Kindle for mac` の xml ファイル              |
+   | `--out-file` | `stdout (csv)` | 保存ファイル名を指定する (.csv, .xlsx, .json) |
+
+   標準入力から読み込み、標準出力に csv で出力
+
+   ```shell
+   cat ./KindleSyncMetadataCache.xml | docker run --rm -i kurumi/kindle-book-list:latest
+   ```
+
+   ファイルを指定して読み込み、カレントに out.xlsx で出力
+
+   ```shell
+   docker run --rm -v ${PWD}:/app \
+      kurumi/kindle-book-list:latest \
+      --in-file KindleSyncMetadataCache.xml \
+      --out-file out.xlsx
    ```
