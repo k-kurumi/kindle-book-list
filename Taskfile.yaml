@@ -32,6 +32,8 @@ tasks:
   docker-build:
     cmds:
       - rm -rf kindle/__pycache__
+      - poetry export -o requirements.txt --without-hashes
+      - defer: rm -f requirements.txt
       - docker build -t kurumi/kindle-book-list:latest .
     desc: docker build
 

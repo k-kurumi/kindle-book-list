@@ -33,3 +33,14 @@
       --in-file KindleSyncMetadataCache.xml \
       --out-file out.xlsx
    ```
+
+## 開発環境のセットアップ
+
+1. [Devbox](https://www.jetpack.io/devbox/docs/installing_devbox/) をインストールする
+2. シェル起動とライブラリインストール
+
+   ```shell
+   devbox shell
+   poetry shell
+   poetry install
+   ```
