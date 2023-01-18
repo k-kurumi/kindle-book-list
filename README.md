@@ -34,14 +34,3 @@
    | ------------ | -------------- | --------------------------------------------- |
    | `--in-file`  | `stdin`        | `Kindle for mac` の xml ファイル              |
    | `--out-file` | `stdout (csv)` | 保存ファイル名を指定する (.csv, .xlsx, .json) |
-
-## 開発環境のセットアップ
-
-1. [Devbox](https://www.jetpack.io/devbox/docs/installing_devbox/) をインストールする
-2. シェル起動とライブラリインストール
-
-   ```shell
-   devbox shell
-   poetry shell
-   poetry install
-   ```
